@@ -5,10 +5,10 @@ TEMPLATE = app
 
 SOURCES += \
         main.cpp \
-        updater.cpp
+        Updater.cpp
 
 HEADERS += \
-        updater.h
+        Updater.h
 
 FORMS += \
-        updater.ui
+        Updater.ui
