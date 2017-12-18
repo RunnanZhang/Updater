@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QNetworkAccessManager>
+#include <QTime>
 
 namespace Ui {
 class Updater;
@@ -18,12 +19,18 @@ public:
     explicit Updater(QWidget *parent = 0);
     ~Updater();
 
+    void setFileList(const QStringList &list);
+
 private slots:
     void on_downloadBtn_clicked();
     void on_installBtn_clicked();
 
+    void downloadFinished(QNetworkReply *reply);
+
+    void networkReplyProgress(qint64 bytesRead, qint64 totalBytes);
+
 #ifndef QT_NO_SSL
-    void sslErrors(QNetworkReply*,const QList<QSslError> &errors);
+    void sslErrors(QNetworkReply *reply, const QList<QSslError> &errors);
 #endif
 
 private:
@@ -31,9 +38,13 @@ private:
 
     QNetworkAccessManager _networdManager;
 
-    QNetworkReply *_reply;
+    QList<QNetworkReply*> _currentDownloads;
 
-    QFile *_file;
+    QStringList _fileList;
+
+    QString _downloadDir;
+
+    QTime _downloadTime;
 };
 
 #endif // UPDATER_H
