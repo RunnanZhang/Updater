@@ -120,6 +120,11 @@ void Updater::on_installBtn_clicked()
 
 }
 
+void Updater::setUpdateInfo(const QString &info)
+{
+    ui->updateInfo->setText(info);
+}
+
 #ifndef QT_NO_SSL
 void Updater::sslErrors(QNetworkReply *reply, const QList<QSslError> &errors)
 {

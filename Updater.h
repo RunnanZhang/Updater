@@ -21,6 +21,8 @@ public:
 
     void setFileList(const QStringList &list);
 
+    void setUpdateInfo(const QString &info);
+
 private slots:
     void on_downloadBtn_clicked();
     void on_installBtn_clicked();
