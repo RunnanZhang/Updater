@@ -11,10 +11,15 @@ int main(int argc, char *argv[])
     // remove the first argument, which is the program's name
     arguments.takeFirst();
 
+    // get the second argument, which is the update info.
+    QString updateInfo = arguments.takeFirst();
+
     QStringList list;
     list << "http://qt90.com/download/MagicAssistant.rar";
+
     Updater w;
-    w.setFileList(list);
+    w.setFileList(arguments);
+    w.setUpdateInfo(updateInfo);
     w.show();
 
     return a.exec();
