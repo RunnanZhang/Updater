@@ -14,9 +14,6 @@ int main(int argc, char *argv[])
     // get the second argument, which is the update info.
     QString updateInfo = arguments.takeFirst();
 
-    QStringList list;
-    list << "http://qt90.com/download/MagicAssistant.rar";
-
     Updater w;
     w.setFileList(arguments);
     w.setUpdateInfo(updateInfo);

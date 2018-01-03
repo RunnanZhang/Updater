@@ -14,6 +14,7 @@ Updater::Updater(QWidget *parent) :
     _downloadDir = qApp->applicationDirPath() + "/Temp";
 
     ui->installBtn->setEnabled(false);
+    ui->stateLabel->hide();
 
     ui->progressBar->setMinimum(0);
     ui->progressBar->setValue(0);
@@ -37,13 +38,6 @@ void Updater::setFileList(const QStringList &list)
 
 void Updater::on_downloadBtn_clicked()
 {
-    QDir dir(_downloadDir);
-
-    if(!dir.exists())
-    {
-        dir.mkpath(_downloadDir);
-    }
-
     _downloadTime.start();
 
     for(auto i : _fileList)
@@ -60,9 +54,24 @@ void Updater::on_downloadBtn_clicked()
 
 void Updater::downloadFinished(QNetworkReply *reply)
 {
+    // 下载完毕后再写到本地，先备份当前程序至Temp文件夹下，在将新程序写入当前文件夹下.
+    QString tempDir = qApp->applicationDirPath() + "/Temp";
+    QDir dir(tempDir);
+    if(!dir.exists()) {
+        dir.mkpath(tempDir);
+    }
+
     QUrl url = reply->url();
     QFileInfo info(url.path());
-    QFile file(_downloadDir + QDir::separator() + info.fileName());
+    QString filePath = qApp->applicationDirPath() + QDir::separator() + info.fileName();
+    QString tempFilePath = tempDir + QDir::separator() + info.fileName();
+
+    if (QFile::exists(filePath)) {
+        QFile::copy(filePath, tempFilePath);
+        QFile::remove(filePath);
+    }
+
+    QFile file(filePath);
     file.open(QIODevice::WriteOnly);
     file.write(reply->readAll());
     file.close();
@@ -128,6 +137,7 @@ void Updater::setUpdateInfo(const QString &info)
 #ifndef QT_NO_SSL
 void Updater::sslErrors(QNetworkReply *reply, const QList<QSslError> &errors)
 {
+    ui->stateLabel->show();
     QString errorString;
     foreach (const QSslError &error, errors) {
         if (!errorString.isEmpty())
