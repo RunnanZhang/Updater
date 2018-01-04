@@ -1,14 +1,19 @@
-QT += network widgets
+QT += network widgets xml
 
 TARGET = Updater
 TEMPLATE = app
 
 SOURCES += \
         main.cpp \
-        Updater.cpp
+        Updater.cpp \
+        Settings.cpp \
 
 HEADERS += \
-        Updater.h
+        Updater.h \
+        Settings.h
 
 FORMS += \
         Updater.ui
+
+RESOURCES += \
+    Updater.qrc

@@ -23,9 +23,10 @@ public:
 
     void setUpdateInfo(const QString &info);
 
+    void setVersion(const QString &version);
+
 private slots:
     void on_downloadBtn_clicked();
-    void on_installBtn_clicked();
 
     void downloadFinished(QNetworkReply *reply);
 
@@ -47,6 +48,8 @@ private:
     QString _downloadDir;
 
     QTime _downloadTime;
+
+    QString _version;
 };
 
 #endif // UPDATER_H

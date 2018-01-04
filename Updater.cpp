@@ -1,5 +1,6 @@
 #include "updater.h"
 #include "ui_Updater.h"
+#include "Settings.h"
 
 #include <QtWidgets>
 #include <QtNetwork>
@@ -13,13 +14,13 @@ Updater::Updater(QWidget *parent) :
 
     _downloadDir = qApp->applicationDirPath() + "/Temp";
 
-    ui->installBtn->setEnabled(false);
     ui->stateLabel->hide();
 
     ui->progressBar->setMinimum(0);
     ui->progressBar->setValue(0);
 
     connect(&_networdManager, SIGNAL(finished(QNetworkReply*)), SLOT(downloadFinished(QNetworkReply*)));
+    connect(ui->completeBtn, &QPushButton::clicked, this, &Updater::close);
 
 #ifndef QT_NO_SSL
     connect(&_networdManager, &QNetworkAccessManager::sslErrors, this, &Updater::sslErrors);
@@ -50,6 +51,11 @@ void Updater::on_downloadBtn_clicked()
     }
 
     ui->stackedWidget->setCurrentWidget(ui->downloadPage);
+
+    // 开启loading.
+    QMovie *movie = new QMovie(":/images/loading.gif");
+    ui->loadLabel->setMovie(movie);
+    movie->start();
 }
 
 void Updater::downloadFinished(QNetworkReply *reply)
@@ -67,6 +73,9 @@ void Updater::downloadFinished(QNetworkReply *reply)
     QString tempFilePath = tempDir + QDir::separator() + info.fileName();
 
     if (QFile::exists(filePath)) {
+        if(QFile::exists(tempFilePath)) {
+            QFile::remove(tempFilePath);
+        }
         QFile::copy(filePath, tempFilePath);
         QFile::remove(filePath);
     }
@@ -82,7 +91,11 @@ void Updater::downloadFinished(QNetworkReply *reply)
     // all downloads finished
     if (_currentDownloads.isEmpty())
     {
-        ui->installBtn->setEnabled(true);
+        // 更新版本号.
+        Settings setting("./version.xml");
+        setting.setValue("version", _version);
+
+        ui->completeBtn->setEnabled(true);
     }
 }
 
@@ -122,16 +135,17 @@ void Updater::networkReplyProgress(qint64 bytesRead, qint64 totalBytes)
 
     s += QString(", %3/%4 %5").arg(read, 0, 'f', 2).arg(total, 0, 'f', 2).arg(unit);
     ui->progressLabel->setText(s);
-}
-
-void Updater::on_installBtn_clicked()
-{
-
+    //ui->progressBar->setFormat("%p% " + s);
 }
 
 void Updater::setUpdateInfo(const QString &info)
 {
     ui->updateInfo->setText(info);
+}
+
+void Updater::setVersion(const QString &version)
+{
+    _version = version;
 }
 
 #ifndef QT_NO_SSL
