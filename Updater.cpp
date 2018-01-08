@@ -99,6 +99,12 @@ void Updater::downloadFinished(QNetworkReply *reply)
     }
 }
 
+void Updater::on_completeBtn_clicked()
+{
+    QProcess::startDetached("MagicAssistant.exe");
+    qApp->quit();
+}
+
 void Updater::networkReplyProgress(qint64 bytesRead, qint64 totalBytes)
 {
     ui->progressBar->setMaximum(totalBytes);

@@ -28,6 +28,8 @@ public:
 private slots:
     void on_downloadBtn_clicked();
 
+    void on_completeBtn_clicked();
+
     void downloadFinished(QNetworkReply *reply);
 
     void networkReplyProgress(qint64 bytesRead, qint64 totalBytes);
